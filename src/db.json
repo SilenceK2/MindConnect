@@ -1,0 +1,62 @@
+{
+    "data": [
+      {
+        "id": 1,
+        "name" : "김태겸",
+        "content" : "누구누구",
+        "location": "안양시 만안구"
+ 
+      },
+      {
+        "id": 2,
+        "name" : "김태순",
+        "content" : "누구ㄴㄷㄹf구",
+        "location": "안seff만안구"
+ 
+      },
+      {
+        "id": 3,
+        "name" : "김태경",
+        "content" : "누구누sef구",
+        "location": "안ㄴㄷㄹㄴㄷㄹㄹㄴㄷㅁ구"
+ 
+      },
+      {
+        "id": 4,
+        "name" : "김태강",
+        "content" : "누구누sef구",
+        "location": "last"
+ 
+      },
+      {
+        "id": 5
+      },
+      {
+        "id": 6
+      }
+    ],
+
+    "chat": [
+               {
+          "connectid": 1,
+          "type": "bot",
+          "contents" : "반갑습니다."
+      },
+      {
+          "connectid": 1,
+          "type": "user",
+          "contents" : "1번입니다"
+      },
+        {
+          "connectid": 2,
+          "type": "bot",
+          "contents" : "반갑습니다1"
+      },
+      {
+          "connectid": 2,
+          "type": "user",
+          "contents" : "잘 지내시나요?2"
+      }
+        
+    ]
+}
