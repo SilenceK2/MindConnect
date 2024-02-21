@@ -4,17 +4,6 @@ import axios from "axios";
 function ChatInput() {
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.put("http://localhost:4000/chat");
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchData();
-  }, []);
   const sendMessage = () => {
     console.log("Sending message:", message);
     setMessage("");

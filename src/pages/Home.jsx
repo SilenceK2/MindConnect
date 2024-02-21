@@ -63,7 +63,7 @@ function Home() {
                     }}
                   >
                     <div className="list-box-icon">
-                      <FaPerson icon size={30} />
+                      <FaPerson icon="true" size={30} />
                     </div>
 
                     <div
