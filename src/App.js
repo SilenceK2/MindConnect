@@ -11,7 +11,7 @@ function App() {
     <>
       <Router>
         <Routes>
-          <Route path="/*" Component={Home} />
+           <Route path="/*" Component={Home} /> 
         </Routes>
       </Router>
     </>

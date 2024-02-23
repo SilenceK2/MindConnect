@@ -4,9 +4,34 @@ import axios from "axios";
 function ChatInput() {
   const [message, setMessage] = useState("");
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (message !== null) {
+          const response = await axios.post("http://localhost:8000/input", {
+            contents: message,
+            type: "user",
+            connectId: 1
+          });
+          console.log("Message sent successfully:", response.data);
+        } else {
+          alert("메시지를 입력하세요.");
+        }
+      } catch (err) {
+        console.error("Error sending message:", err);
+      }
+    };
+
+    //fetchData();
+  }, [message]);
+
   const sendMessage = () => {
-    console.log("Sending message:", message);
-    setMessage("");
+    if (message === "") {
+      alert("메시지를 입력하세요.");
+    } else {
+      console.log("Sending message:", message);
+      setMessage("");
+    }
   };
 
   return (

@@ -18,7 +18,7 @@ function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/data");
+        const response = await axios.get("http://localhost:8000/connecter");
         setData(response.data);
         const ConnectId = response.data.map((item) => item.id);
         setIds(ConnectId);
@@ -30,10 +30,12 @@ function Home() {
     fetchData();
   }, []);
 
+
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/chat");
+        const response = await axios.get("http://localhost:8000/chat");
         setChatData(response.data);
       } catch (error) {
         console.error(error);
@@ -42,8 +44,6 @@ function Home() {
 
     fetchData();
   }, []);
-
-  console.log(chatData);
 
   return (
     <>
@@ -73,7 +73,7 @@ function Home() {
                         navigate(`/${id}`);
                       }}
                     >
-                      <h3>Name: {currentData.name}</h3>
+                      <p>Name: {currentData.name}</p>
                       <p>Content: {currentData.content}</p>
                       <p>Location: {currentData.location}</p>
                     </div>
@@ -90,26 +90,29 @@ function Home() {
             </div>
           </div>
           <div className="chat-board">
-            <div className="chat-item-top"></div>
+            <div className="chat-item-top"><button type="submit">채팅 나가기</button></div>
             <div className="chat-main">
               {selectedId !== -1 && (
                 <div className="chat-bg">
                   {chatData
-                    .filter((message) => message.connectid === selectedId)
+                    .filter((message) => message.connectId === selectedId)
                     .map((message) => (
                       <div>
+
                         {message.type === "user" ? (
                           <ChatBubble
-                            id={message.connectid}
+                            id={message.connectId}
                             type="user"
                             content={message.contents}
                           />
                         ) : (
+                          
                           <ChatBubble
-                            id={message.connectid}
+                            id={message.connectId}
                             type="bot"
                             content={message.contents}
                           />
+                          
                         )}
                       </div>
                     ))}

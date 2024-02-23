@@ -73,8 +73,12 @@
   text-align: left;
 }
 
-.list-box > p:nth-child(3) {
+.list-box > div > p:nth-child(3) {
   color: gray;
+}
+
+.list-box > div > p:nth-child(1) {
+  font-weight: bold;
 }
 
 .chat-board {
@@ -121,6 +125,7 @@
   padding: 10px;
   border-radius: 20px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
 }
 
 .chat-input input {
@@ -229,6 +234,7 @@
 .Login-btn:hover {
   background-color: #7c7c7c;
   color: #fff;
+  transition: 0.2s;
 }
 
 .Login-btn > p {
