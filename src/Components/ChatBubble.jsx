@@ -3,7 +3,7 @@ function ChatBubble({ type, content, id }) {
     <>
     
       
-      <div className={`chat-bubble ${id} ${type}`}>{type}{content}</div>
+      <div className={`chat-bubble ${id} ${type}`}>{content}</div>
     </>
   );
 }

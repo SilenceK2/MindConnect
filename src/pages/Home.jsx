@@ -14,8 +14,9 @@ function Home() {
   const [chatData, setChatData] = useState([]);
 
   const navigate = useNavigate();
+  const dataUrl = window.location.href.slice(-1);
 
-  useEffect(() => {
+
     const fetchData = async () => {
       try {
         const response = await axios.get("http://localhost:8000/connecter");
@@ -27,13 +28,7 @@ function Home() {
       }
     };
 
-    fetchData();
-  }, []);
-
-
-
-  useEffect(() => {
-    const fetchData = async () => {
+    const fetchChatData = async () => {
       try {
         const response = await axios.get("http://localhost:8000/chat");
         setChatData(response.data);
@@ -42,8 +37,30 @@ function Home() {
       }
     };
 
-    fetchData();
-  }, []);
+    useEffect (()=>{
+      fetchChatData();
+
+    },[])
+
+    useEffect(()=>{
+      fetchData();
+  
+    },[])
+
+
+
+  const deleteChat = async () => {
+    try {
+      await axios.post(`http://localhost:8000/delete/${dataUrl}`);
+      console.log("채팅 삭제");
+    } catch (error) {
+      console.error('error', error.message);
+    }
+  };
+
+
+
+
 
   return (
     <>
@@ -52,14 +69,13 @@ function Home() {
           <div className="list">
             <div className="list-logo"></div>
             <div className="list-item">
-              {ids.map((id) => {
-                const currentData = data.find((item) => item.id === id);
+              {data.map((currentData) => {
                 return (
                   <div
                     className="list-box"
-                    key={id}
+                    key={currentData.id}
                     onClick={() => {
-                      setSelectedId(id);
+                      setSelectedId(currentData.id);
                     }}
                   >
                     <div className="list-box-icon">
@@ -68,9 +84,9 @@ function Home() {
 
                     <div
                       className="list-box-item"
-                      key={id}
+                      key={currentData.id}
                       onClick={() => {
-                        navigate(`/${id}`);
+                        navigate(`/${currentData.id}`);
                       }}
                     >
                       <p>Name: {currentData.name}</p>
@@ -90,30 +106,19 @@ function Home() {
             </div>
           </div>
           <div className="chat-board">
-            <div className="chat-item-top"><button type="submit">채팅 나가기</button></div>
+            <div className="chat-item-top"><button type="submit" onClick={deleteChat}>채팅 나가기</button></div>
             <div className="chat-main">
               {selectedId !== -1 && (
                 <div className="chat-bg">
                   {chatData
                     .filter((message) => message.connectId === selectedId)
-                    .map((message) => (
-                      <div>
-
-                        {message.type === "user" ? (
-                          <ChatBubble
-                            id={message.connectId}
-                            type="user"
-                            content={message.contents}
-                          />
-                        ) : (
-                          
-                          <ChatBubble
-                            id={message.connectId}
-                            type="bot"
-                            content={message.contents}
-                          />
-                          
-                        )}
+                    .map((message, index) => (
+                      <div key={index}>
+                        <ChatBubble
+                          id={message.connectId}
+                          type={message.type === "user" ? "user" : "bot" }
+                          content={message.contents}
+                        />
                       </div>
                     ))}
                 </div>
