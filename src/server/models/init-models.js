@@ -1,15 +1,12 @@
 var DataTypes = require("sequelize").DataTypes;
-var _chat = require("./chat");
-var _connecter = require("./connecter");
+var _member = require("./member");
 
 function initModels(sequelize) {
-  var chat = _chat(sequelize, DataTypes);
-  var connecter = _connecter(sequelize, DataTypes);
+  var member = _member(sequelize, DataTypes);
 
 
   return {
-    chat,
-    connecter,
+    member,
   };
 }
 module.exports = initModels;

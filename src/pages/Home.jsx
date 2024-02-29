@@ -6,61 +6,63 @@ import axios from "axios";
 import { FaPerson } from "react-icons/fa6";
 import "../main.css";
 import { useNavigate } from "react-router-dom";
+import Login from "./LogIn";
 
 function Home() {
-  const [ids, setIds] = useState([]);
   const [data, setData] = useState([]);
   const [selectedId, setSelectedId] = useState(-1);
   const [chatData, setChatData] = useState([]);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const navigate = useNavigate();
   const dataUrl = window.location.href.slice(-1);
 
+  const openModal = () => {
+    setShowLoginModal(true);
+  };
 
+  const closeModal = () => {
+    setShowLoginModal(false);
+  };
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get("http://localhost:8000/connecter");
         setData(response.data);
-        const ConnectId = response.data.map((item) => item.id);
-        setIds(ConnectId);
       } catch (error) {
         console.error(error);
       }
     };
+    fetchData();
+  }, []);
 
-    const fetchChatData = async () => {
-      try {
-        const response = await axios.get("http://localhost:8000/chat");
-        setChatData(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  const fetchChatData = async (selectedId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/chat/${selectedId}`
+      );
+      setChatData(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-    useEffect (()=>{
-      fetchChatData();
-
-    },[])
-
-    useEffect(()=>{
-      fetchData();
-  
-    },[])
-
-
+  useEffect(() => {
+    if (selectedId !== -1) {
+      fetchChatData(selectedId);
+    }
+  }, [selectedId]);
 
   const deleteChat = async () => {
     try {
       await axios.post(`http://localhost:8000/delete/${dataUrl}`);
       console.log("채팅 삭제");
+      setChatData([]);
     } catch (error) {
-      console.error('error', error.message);
+      console.error("error", error.message);
     }
   };
-
-
-
-
 
   return (
     <>
@@ -99,14 +101,18 @@ function Home() {
             </div>
             <div className="list-login">
               <div className="login">
-                <button className="Login-btn" type="submit">
+                <button className="Login-btn" type="submit" onClick={openModal}>
                   <p>Login</p>
                 </button>
               </div>
             </div>
           </div>
           <div className="chat-board">
-            <div className="chat-item-top"><button type="submit" onClick={deleteChat}>채팅 나가기</button></div>
+            <div className="chat-item-top">
+              <button type="submit" onClick={deleteChat}>
+                채팅 나가기
+              </button>
+            </div>
             <div className="chat-main">
               {selectedId !== -1 && (
                 <div className="chat-bg">
@@ -116,7 +122,7 @@ function Home() {
                       <div key={index}>
                         <ChatBubble
                           id={message.connectId}
-                          type={message.type === "user" ? "user" : "bot" }
+                          type={message.type === "user" ? "user" : "bot"}
                           content={message.contents}
                         />
                       </div>
@@ -125,12 +131,24 @@ function Home() {
               )}
 
               <div className="chat-msg">
-                <ChatInput />
+                <ChatInput
+                  setChatData={(message) =>
+                    setChatData(
+                      chatData.concat({
+                        id: "",
+                        connectId: selectedId,
+                        contents: message,
+                        type: "user",
+                      })
+                    )
+                  }
+                />
               </div>
             </div>
           </div>
         </div>
       </div>
+      {showLoginModal && <Login onClose={closeModal} />}
     </>
   );
 }

@@ -1,0 +1,94 @@
+.login-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(166, 166, 166, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 50%;
+  max-width: 400px;
+  height: 50%;
+  max-height: 300x;
+  display: flex;
+  text-align: center;
+  justify-content: center;
+}
+
+.login-container {
+  flex-grow: 1;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.login-container input {
+  margin: 20px;
+  width: 70%;
+  height: 30px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  margin-left: 55px;
+  font-weight: 300;
+}
+
+.login-container p {
+  flex-basis: 20px;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.login-container button {
+  background-color: #333;
+  color: #fff;
+  border: none;
+  padding: 10px 30px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  flex-basis: 20px;
+  flex-grow: 3;
+  overflow-wrap: break-word;
+}
+
+.modal .login-container button:hover {
+  background-color: #555;
+}
+
+.login-show-btn {
+  display: flex;
+  margin-top: 20px;
+  margin-right: 50px;
+  margin-left: 50px;
+}
+
+.login-container > div > input {
+  border: solid 0.1px black;
+  border-radius: 5px;
+  width: 70%;
+}
+
+.join-select > p {
+  font-weight: normal;
+  margin-bottom: 0px;
+  float: right;
+}
+
+.join-select {
+  flex: 4;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  cursor: pointer;
+  margin-top: 20px;
+}

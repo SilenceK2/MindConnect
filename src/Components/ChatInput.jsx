@@ -1,28 +1,35 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { io } from "socket.io-client";
 
-function ChatInput() {
+function ChatInput(props) {
   const [message, setMessage] = useState("");
   const dataUrl = window.location.href.slice(-1);
+  // const socket = io("http://localhost:8000", {
+  //   transports: ["websocket"],
+  // });
 
-  useEffect(() => {
-  }, [message]);
+  // useEffect(() => {
+  //   socket.emit("join", dataUrl);
+
+  //   socket.emit("msg", message);
+  // }, [props.setChatData]);
 
   const fetchData = async () => {
     try {
       if (message.trim() !== "") {
         const response = await axios.post("http://localhost:8000/input", {
-          
-        contents: message,
+          contents: message,
           type: "user",
-          connectId: dataUrl
+          connectId: dataUrl,
         });
-        console.log("Message sent successfully:", response.data);
+        console.log("메시지 전송 성공:", response.data);
+        props.setChatData(message);
       } else {
         alert("메시지를 입력하세요.");
       }
     } catch (err) {
-      console.error("Error sending message:", err);
+      console.error("메시지 전송 중 오류:", err);
     }
   };
 
@@ -30,11 +37,13 @@ function ChatInput() {
     if (message === "") {
       alert("메시지를 입력하세요.");
     } else {
-      console.log("Sending message:", message);
+      console.log("메시지 전송 중:", message);
+
       setMessage("");
-      fetchData(); 
+      fetchData();
     }
   };
+
   return (
     <div className="chat-input">
       <input
