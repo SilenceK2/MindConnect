@@ -4,16 +4,16 @@ import axios from "axios";
 import Join from "./Join";
 
 function Login({ onClose }) {
-  const [userId, setUserId] = useState("");
+  const [userEmail, setUserEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const fetchData = async () => {
     try {
       const response = await axios.post("http://localhost:8000/login", {
-        userId: userId,
+        userEmail: userEmail,
         password: password,
       });
-      const token = response.data.token;
+      const token = response.data.accessToken;
 
       {
         token !== null && alert("로그인 성공");
@@ -27,7 +27,7 @@ function Login({ onClose }) {
   };
 
   const onchangelogin = (e) => {
-    setUserId(e.target.value);
+    setUserEmail(e.target.value);
   };
 
   const onchangepassword = (e) => {
@@ -48,7 +48,7 @@ function Login({ onClose }) {
               <input
                 type="text"
                 onChange={onchangelogin}
-                placeholder=" 로그인하세요"
+                placeholder=" email"
               />
               <input
                 type="password"

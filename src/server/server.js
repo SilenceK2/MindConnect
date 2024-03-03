@@ -1,6 +1,6 @@
 const express = require("express");
 const db = require("./models/index");
-const jwt = require("jsonwebtoken");
+// const jwt = require("jsonwebtoken");
 const { sequelize } = require("./models/index");
 const cors = require("cors");
 const app = express();
@@ -9,9 +9,16 @@ const http = require("http");
 // const { json } = require("sequelize");
 // const { Server } = require("socket.io");
 const server = http.createServer(app);
+const {
+  login,
+  accessToken,
+  refreshToken,
+  loginSuccess,
+  logout,
+} = require("./controller");
 
 app.use(express.json());
-app.use(cors());
+app.use(cors()); // sen설정해두기
 
 sequelize
   .sync()
@@ -68,42 +75,39 @@ sequelize
       return res.json(chatDelete);
     });
 
-    // app.get("/member", async (req, res) => {
-    //   const show = await db.member.findAll();
-    //   return res.json(show);
+    // jwt  section
+
+    // app.post("/login", async (req, res) => {
+    //   res.header("Access-Control-Allow-Origin", "*");
+
+    //   try {
+    //     const { userId, password } = req.body;
+    //     const member = await db.member.findOne({
+    //       where: {
+    //         id: userId,
+    //         password: password,
+    //       },
+    //     });
+
+    //     if (member) {
+    //       const Accesstoken = jwt.sign({ userId }, "key", {
+    //         expiresIn: "12h",
+    //       });
+    //       res.json({ Accesstoken });
+    //     } else {
+    //       res.status(401).json({ message: "인증 실패" });
+    //     }
+    //   } catch (error) {
+    //     console.error("로그인 중 오류:", error);
+    //     res.status(500).json({ message: "서버 오류" });
+    //   }
     // });
 
-    //
-    //
-    //
-    //
-    //
-
-    app.post("/login", async (req, res) => {
-      res.header("Access-Control-Allow-Origin", "*");
-
-      try {
-        const { userId, password } = req.body;
-        const member = await db.member.findOne({
-          where: {
-            id: userId,
-            password: password,
-          },
-        });
-
-        if (member) {
-          const token = jwt.sign({ password }, "key", {
-            expiresIn: "12h",
-          });
-          res.json({ token });
-        } else {
-          res.status(401).json({ message: "인증 실패" });
-        }
-      } catch (error) {
-        console.error("로그인 중 오류:", error);
-        res.status(500).json({ message: "서버 오류" });
-      }
-    });
+    app.post("/login", login);
+    app.get("/accesstoken", accessToken);
+    app.get("/refreshtoken", refreshToken);
+    app.get("/login/succes", loginSuccess);
+    app.post("/logout", logout);
 
     //
     //
