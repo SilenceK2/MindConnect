@@ -8,7 +8,7 @@ import "../main.css";
 import { useNavigate } from "react-router-dom";
 import Login from "./LogIn";
 
-function Home() {
+function Home(userName) {
   const [data, setData] = useState([]);
   const [selectedId, setSelectedId] = useState(-1);
   const [chatData, setChatData] = useState([]);
@@ -148,6 +148,7 @@ function Home() {
           </div>
         </div>
       </div>
+
       {showLoginModal && <Login onClose={closeModal} />}
     </>
   );

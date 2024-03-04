@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "./css/Login.css";
 import axios from "axios";
-import Join from "./Join";
 
 function Login({ onClose }) {
   const [userEmail, setUserEmail] = useState("");
@@ -9,14 +8,21 @@ function Login({ onClose }) {
 
   const fetchData = async () => {
     try {
-      const response = await axios.post("http://localhost:8000/login", {
-        userEmail: userEmail,
-        password: password,
-      });
-      const token = response.data.accessToken;
+      const response = await axios.post(
+        "http://localhost:8000/login",
+        {
+          userEmail: userEmail,
+          password: password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
 
-      {
-        token !== null && alert("로그인 성공");
+      const token = response.data.accessToken;
+      if (token !== null) {
+        alert("로그인 성공");
+        onClose();
       }
 
       console.log(token);
