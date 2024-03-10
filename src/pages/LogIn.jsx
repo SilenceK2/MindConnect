@@ -1,10 +1,15 @@
 import React, { useState } from "react";
 import "./css/Login.css";
 import axios from "axios";
+import { Outlet } from "react-router";
+import { useRecoilState } from "recoil";
+import { userDataState } from "../recoil/atom";
+import verifyToken from "../utils/auth";
 
-function Login({ onClose }) {
+function Login({}) {
   const [userEmail, setUserEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [, setUserData] = useRecoilState(userDataState);
 
   const fetchData = async () => {
     try {
@@ -20,9 +25,16 @@ function Login({ onClose }) {
       );
 
       const token = response.data.accessToken;
-      if (token !== null) {
+
+      // const tokenString = JSON.stringify(token);
+      localStorage.setItem("accessToken", token);
+      const user = await verifyToken(token);
+      if (user) {
+        setUserData(user);
         alert("로그인 성공");
-        onClose();
+        window.location.href = "/";
+        window.location.reload();
+        console.log(setUserData);
       }
 
       console.log(token);
@@ -66,15 +78,16 @@ function Login({ onClose }) {
               <button className="login-on" onClick={sendUser}>
                 로그인
               </button>
-              <button className="login-off" onClick={onClose}>
+              {/* <button className="login-off" onClick={onClose}>
                 로그인 닫기
-              </button>
+              </button> */}
             </div>
             <div className="join-select">
               <p>회원가입</p>
             </div>
           </div>
         </div>
+        <Outlet />
       </div>
     </>
   );

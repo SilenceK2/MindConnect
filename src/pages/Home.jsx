@@ -1,29 +1,32 @@
-import React from "react";
-import ChatInput from "../Components/ChatInput";
-import ChatBubble from "../Components/ChatBubble";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FaPerson } from "react-icons/fa6";
+import { Outlet, useNavigate } from "react-router-dom";
+// import Login from "./LogIn";
+import ChatInput from "../Components/ChatInput";
+import ChatBubble from "../Components/ChatBubble";
+import { useRecoilValue } from "recoil";
+import { userDataState } from "../recoil/atom";
 import "../main.css";
-import { useNavigate } from "react-router-dom";
-import Login from "./LogIn";
 
-function Home(userName) {
+function Home() {
   const [data, setData] = useState([]);
   const [selectedId, setSelectedId] = useState(-1);
   const [chatData, setChatData] = useState([]);
-  const [showLoginModal, setShowLoginModal] = useState(false);
+  const userData = useRecoilValue(userDataState);
+  // const [showLoginModal, setShowLoginModal] = useState(false);
 
   const navigate = useNavigate();
   const dataUrl = window.location.href.slice(-1);
+  console.log(userData);
 
-  const openModal = () => {
-    setShowLoginModal(true);
-  };
+  // const openModal = () => {
+  //   setShowLoginModal(true);
+  // };
 
-  const closeModal = () => {
-    setShowLoginModal(false);
-  };
+  // const closeModal = () => {
+  //   setShowLoginModal(false);
+  // };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -71,38 +74,36 @@ function Home(userName) {
           <div className="list">
             <div className="list-logo"></div>
             <div className="list-item">
-              {data.map((currentData) => {
-                return (
+              {data.map((currentData) => (
+                <div
+                  className="list-box"
+                  key={currentData.id}
+                  onClick={() => {
+                    setSelectedId(currentData.id);
+                  }}
+                >
+                  <div className="list-box-icon">
+                    <FaPerson icon="true" size={30} />
+                  </div>
+
                   <div
-                    className="list-box"
+                    className="list-box-item"
                     key={currentData.id}
                     onClick={() => {
-                      setSelectedId(currentData.id);
+                      navigate(`/${currentData.id}`);
                     }}
                   >
-                    <div className="list-box-icon">
-                      <FaPerson icon="true" size={30} />
-                    </div>
-
-                    <div
-                      className="list-box-item"
-                      key={currentData.id}
-                      onClick={() => {
-                        navigate(`/${currentData.id}`);
-                      }}
-                    >
-                      <p>Name: {currentData.name}</p>
-                      <p>Content: {currentData.content}</p>
-                      <p>Location: {currentData.location}</p>
-                    </div>
+                    <p>Name: {currentData.name}</p>
+                    <p>Content: {currentData.content}</p>
+                    <p>Location: {currentData.location}</p>
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
             <div className="list-login">
               <div className="login">
-                <button className="Login-btn" type="submit" onClick={openModal}>
-                  <p>Login</p>
+                <button className="Login-btn" type="submit">
+                  <p>user</p>
                 </button>
               </div>
             </div>
@@ -149,7 +150,7 @@ function Home(userName) {
         </div>
       </div>
 
-      {showLoginModal && <Login onClose={closeModal} />}
+      {/* {showLoginModal && <Login onClose={closeModal} onLogin={loginUser} />} */}
     </>
   );
 }

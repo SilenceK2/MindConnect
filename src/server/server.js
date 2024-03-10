@@ -13,8 +13,9 @@ const {
   refreshToken,
   loginSuccess,
   logout,
-  testCookie,
 } = require("./controller");
+const { verify } = require("jsonwebtoken");
+// const secretKey = "my-secret-key";
 
 app.use(express.json());
 app.use(
@@ -30,10 +31,13 @@ sequelize
     console.log("데이터베이스 연결 성공");
 
     app.get("/", (req, res) => {
+      // jwt헤더 설정
       res.send("루트 경로");
     });
 
     app.get("/connecter", async (req, res) => {
+      // jwt헤더 설정
+
       const connect = await db.connecter.findAll();
       return res.json(connect);
     });
@@ -69,11 +73,9 @@ sequelize
     });
 
     app.post("/login", login);
-    app.get("/accesstoken", accessToken);
-    app.get("/refreshtoken", refreshToken);
+    app.post("/verify", verify);
     app.get("/login/succes", loginSuccess);
     app.post("/logout", logout);
-    app.get("/test", testCookie);
 
     app.listen(PORT, () => console.log(`서버 시작`));
   })

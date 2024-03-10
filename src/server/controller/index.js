@@ -6,9 +6,10 @@ const redisClient = Redis.createClient({
   port: 6379,
   legacyMode: true,
 });
+
 const login = async (req, res) => {
   try {
-    redisClient.connect();
+    await redisClient.connect();
     const { userEmail, password } = req.body;
     const userInfo = await db.member.findOne({
       where: {
@@ -20,6 +21,7 @@ const login = async (req, res) => {
     if (!userInfo) {
       return res.status(401).json({ message: "인증 실패" });
     }
+
     const userData = {
       id: userInfo.id,
       email: userInfo.email,
@@ -44,20 +46,17 @@ const login = async (req, res) => {
       }
     );
 
-    redisClient.set(userEmail, refreshToken, (err, reply) => {
-      if (err) throw err;
-      console.log(reply);
+    redisClient.set(userEmail, refreshToken, (err) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ message: "Redis 연결 오류" });
+      } else {
+        // res.status(200).json({ accessToken, message: "login-success" });
+      }
     });
 
-    // 쿠키값에 토큰 태워보냄
-    res.cookie("accessToken", accessToken, {
-      secure: false,
-      httpOnly: true,
-    });
-    res.cookie("refreshToken", refreshToken, {
-      secure: false,
-      httpOnly: true,
-    });
+    redisClient.set(userEmail, refreshToken);
+
     res.status(200).json({ accessToken, message: "login-success" });
   } catch (error) {
     console.error(error);
@@ -65,25 +64,37 @@ const login = async (req, res) => {
   }
 };
 
-const testCookie = (req, res) => {
-  res.cookie("testCookie", "안녕하세요, 쿠키!", {
-    secure: false,
-    httpOnly: true,
+const verify = (req, res) => {
+  const { accessToken } = req.body;
+  console.log(accessToken);
+
+  if (!accessToken) {
+    return res.status(400).json({ error: "Access token not provided" });
+  }
+
+  // 토큰 검증
+  jwt.verify(accessToken, SECRET_KEY, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ error: "Invalid access token" });
+    }
+
+    // 유효한 경우, 필요한 사용자 정보를 전송
+    const user = {
+      email: decoded.email,
+      name: decoded.name,
+    };
+
+    res.status(200).json(user);
   });
-
-  res.status(200).json({ message: "테스트 쿠키가 성공적으로 설정되었습니다." });
 };
-
-const accessToken = (req, res) => {};
 const refreshToken = (req, res) => {};
 const loginSuccess = (req, res) => {};
-const logout = (req, res) => {};
+const logout = async (req, res) => {};
 
 module.exports = {
   login,
-  accessToken,
+  verify,
   refreshToken,
   loginSuccess,
   logout,
-  testCookie,
 };

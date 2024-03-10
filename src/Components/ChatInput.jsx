@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
-import { io } from "socket.io-client";
 
 function ChatInput(props) {
   const [message, setMessage] = useState("");
