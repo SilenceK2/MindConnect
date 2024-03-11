@@ -1,26 +1,62 @@
-const verifyToken = async (accessToken) => {
+import axios from "axios";
+import { useSetRecoilState } from "recoil";
+import { userState } from "../recoil/atom";
+
+const Logins = async (userEmail, password) => {
   try {
-    const response = await fetch("http://localhost:8000/verify", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await axios.post(
+      "http://localhost:8000/login",
+      {
+        userEmail: userEmail,
+        password: password,
       },
-      body: JSON.stringify({ accessToken }),
-    });
+      {
+        withCredentials: true,
+      }
+    );
 
-    console.log(accessToken);
-
-    if (response.ok) {
-      const user = await response.json();
-      return user;
+    const token = response.data.accessToken;
+    if (token !== null) {
+      localStorage.setItem("accessToken", token);
+      return { success: true, token };
     } else {
-      console.error("Authentication error:", response.statusText);
-      return null;
+      console.error("Invalid token");
+      return { success: false, error: "Invalid token" };
     }
   } catch (error) {
-    console.error("Authentication error:", error);
-    return null;
+    console.error("Login error:", error);
+    return { success: false, error: "Login failed" };
   }
 };
 
-export default verifyToken;
+const verify = async () => {
+  try {
+    const accessToken = localStorage.getItem("accessToken");
+
+    if (!accessToken) {
+      return { success: false, error: "토큰없음" };
+    }
+
+    const response = await axios.post(
+      "http://localhost:8000/checking",
+      { accessToken: accessToken },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    const user = response.data.user;
+
+    if (response.data.success) {
+      return { success: true, user };
+    } else {
+      return { success: false, error: response.data.error };
+    }
+  } catch (error) {
+    console.error("인증실패:", error);
+    return { success: false, error: "인증실패" };
+  }
+};
+
+export { Logins, verify };

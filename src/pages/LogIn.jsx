@@ -1,59 +1,27 @@
 import React, { useState } from "react";
 import "./css/Login.css";
-import axios from "axios";
-import { Outlet } from "react-router";
-import { useRecoilState } from "recoil";
-import { userDataState } from "../recoil/atom";
-import verifyToken from "../utils/auth";
+import { Logins, verify } from "../utils/auth";
+import { useNavigate } from "react-router-dom";
+// import { userState } from "../recoil/atom";
+// import { useRecoilState } from "recoil";
 
-function Login({}) {
+function Login() {
   const [userEmail, setUserEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [, setUserData] = useRecoilState(userDataState);
+  // const [user, setUser] = useRecoilState(userState);
+  const navigate = useNavigate();
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:8000/login",
-        {
-          userEmail: userEmail,
-          password: password,
-        },
-        {
-          withCredentials: true,
-        }
-      );
+  const sendUser = async () => {
+    const result = await Logins(userEmail, password);
 
-      const token = response.data.accessToken;
-
-      // const tokenString = JSON.stringify(token);
-      localStorage.setItem("accessToken", token);
-      const user = await verifyToken(token);
-      if (user) {
-        setUserData(user);
-        alert("로그인 성공");
-        window.location.href = "/";
-        window.location.reload();
-        console.log(setUserData);
-      }
-
-      console.log(token);
-    } catch (error) {
-      alert("로그인 실패");
-      console.error("로그인 오류:", error);
+    if (result.success) {
+      alert("로그인 성공");
+      window.location.href = "/home";
+      window.location.reload();
+      // setUser("test");
+    } else {
+      alert(`로그인 실패: ${result.error}`);
     }
-  };
-
-  const onchangelogin = (e) => {
-    setUserEmail(e.target.value);
-  };
-
-  const onchangepassword = (e) => {
-    setPassword(e.target.value);
-  };
-
-  const sendUser = () => {
-    fetchData();
   };
 
   return (
@@ -65,12 +33,12 @@ function Login({}) {
             <div className="login-container input">
               <input
                 type="text"
-                onChange={onchangelogin}
+                onChange={(e) => setUserEmail(e.target.value)}
                 placeholder=" email"
               />
               <input
                 type="password"
-                onChange={onchangepassword}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder=" 비밀번호 입력"
               />
             </div>
@@ -78,16 +46,17 @@ function Login({}) {
               <button className="login-on" onClick={sendUser}>
                 로그인
               </button>
-              {/* <button className="login-off" onClick={onClose}>
-                로그인 닫기
-              </button> */}
             </div>
-            <div className="join-select">
+            <div
+              className="join-select"
+              onClick={() => {
+                navigate(`/join`);
+              }}
+            >
               <p>회원가입</p>
             </div>
           </div>
         </div>
-        <Outlet />
       </div>
     </>
   );

@@ -5,10 +5,16 @@ import router from "./router/router";
 import { RouterProvider } from "react-router-dom";
 import reportWebVitals from "./reportWebVitals";
 import { RecoilRoot } from "recoil";
+import { userState } from "./recoil/atom";
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
-  <RecoilRoot>
+  <RecoilRoot
+    initializeState={({ set }) => {
+      set(userState, "foo");
+    }}
+  >
     <React.StrictMode>
       <RouterProvider router={router} />
     </React.StrictMode>

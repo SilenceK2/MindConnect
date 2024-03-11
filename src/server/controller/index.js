@@ -50,51 +50,45 @@ const login = async (req, res) => {
       if (err) {
         console.error(err);
         return res.status(500).json({ message: "Redis 연결 오류" });
-      } else {
-        // res.status(200).json({ accessToken, message: "login-success" });
       }
     });
 
-    redisClient.set(userEmail, refreshToken);
-
-    res.status(200).json({ accessToken, message: "login-success" });
+    res.status(200).json({ accessToken, message: "login-success", userEmail });
+    // redisClient.quit();
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "서버 오류" });
   }
 };
 
-const verify = (req, res) => {
+const checking = (req, res) => {
   const { accessToken } = req.body;
-  console.log(accessToken);
 
   if (!accessToken) {
-    return res.status(400).json({ error: "Access token not provided" });
+    return res.status(400).json({ error: "토큰이 없습니다.!" });
   }
 
-  // 토큰 검증
-  jwt.verify(accessToken, SECRET_KEY, (err, decoded) => {
+  jwt.verify(accessToken, "my-secret-key", (err, decoded) => {
     if (err) {
-      return res.status(401).json({ error: "Invalid access token" });
+      return res.status(401).json({ error: "accesstoken 없음" });
     }
 
-    // 유효한 경우, 필요한 사용자 정보를 전송
     const user = {
+      //user에 담긴거 recoil로 상태관리 보내기??
       email: decoded.email,
       name: decoded.name,
     };
-
-    res.status(200).json(user);
+    res.status(200).json({ success: true, user }); // auth로 success : true보냄 ( router 사용할때 써먹을 것 )
   });
 };
-const refreshToken = (req, res) => {};
-const loginSuccess = (req, res) => {};
+
+const join = async (req, res) => {};
+
 const logout = async (req, res) => {};
 
 module.exports = {
+  join,
   login,
-  verify,
-  refreshToken,
-  loginSuccess,
+  checking,
   logout,
 };

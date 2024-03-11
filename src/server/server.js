@@ -7,14 +7,7 @@ const PORT = process.env.PORT || 8000;
 // const http = require("http");
 // const { Server } = require("socket.io");
 // const server = http.createServer(app);
-const {
-  login,
-  accessToken,
-  refreshToken,
-  loginSuccess,
-  logout,
-} = require("./controller");
-const { verify } = require("jsonwebtoken");
+const { login, checking, logout, join } = require("./controller");
 // const secretKey = "my-secret-key";
 
 app.use(express.json());
@@ -31,13 +24,10 @@ sequelize
     console.log("데이터베이스 연결 성공");
 
     app.get("/", (req, res) => {
-      // jwt헤더 설정
       res.send("루트 경로");
     });
 
     app.get("/connecter", async (req, res) => {
-      // jwt헤더 설정
-
       const connect = await db.connecter.findAll();
       return res.json(connect);
     });
@@ -73,9 +63,9 @@ sequelize
     });
 
     app.post("/login", login);
-    app.post("/verify", verify);
-    app.get("/login/succes", loginSuccess);
-    app.post("/logout", logout);
+    app.post("/checking", checking);
+    app.get("/logout", logout);
+    app.post("/join", join);
 
     app.listen(PORT, () => console.log(`서버 시작`));
   })

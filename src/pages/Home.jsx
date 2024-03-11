@@ -1,32 +1,17 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FaPerson } from "react-icons/fa6";
-import { Outlet, useNavigate } from "react-router-dom";
-// import Login from "./LogIn";
+import { useNavigate } from "react-router-dom";
 import ChatInput from "../Components/ChatInput";
 import ChatBubble from "../Components/ChatBubble";
-import { useRecoilValue } from "recoil";
-import { userDataState } from "../recoil/atom";
 import "../main.css";
 
-function Home() {
+function Home(props) {
   const [data, setData] = useState([]);
   const [selectedId, setSelectedId] = useState(-1);
   const [chatData, setChatData] = useState([]);
-  const userData = useRecoilValue(userDataState);
-  // const [showLoginModal, setShowLoginModal] = useState(false);
-
   const navigate = useNavigate();
   const dataUrl = window.location.href.slice(-1);
-  console.log(userData);
-
-  // const openModal = () => {
-  //   setShowLoginModal(true);
-  // };
-
-  // const closeModal = () => {
-  //   setShowLoginModal(false);
-  // };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,6 +24,14 @@ function Home() {
     };
     fetchData();
   }, []);
+
+  const fetchDeleteLoginData = async () => {
+    try {
+      await axios.get("http://localhost:8000/logout");
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const fetchChatData = async (selectedId) => {
     try {
@@ -65,6 +58,11 @@ function Home() {
     } catch (error) {
       console.error("error", error.message);
     }
+  };
+
+  const LogoutEvent = () => {
+    localStorage.removeItem("accessToken");
+    fetchDeleteLoginData();
   };
 
   return (
@@ -102,8 +100,12 @@ function Home() {
             </div>
             <div className="list-login">
               <div className="login">
-                <button className="Login-btn" type="submit">
-                  <p>user</p>
+                <button
+                  className="Login-btn"
+                  type="submit"
+                  onClick={LogoutEvent}
+                >
+                  <p>userName : </p>
                 </button>
               </div>
             </div>
