@@ -2,23 +2,24 @@ import React, { useState } from "react";
 import "./css/Login.css";
 import { Logins, verify } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
-// import { userState } from "../recoil/atom";
-// import { useRecoilState } from "recoil";
+import { userState } from "../recoil/atom";
+import { useRecoilState } from "recoil";
 
 function Login() {
   const [userEmail, setUserEmail] = useState("");
   const [password, setPassword] = useState("");
-  // const [user, setUser] = useRecoilState(userState);
   const navigate = useNavigate();
-
+  const [user, setUser] = useRecoilState(userState);
   const sendUser = async () => {
     const result = await Logins(userEmail, password);
+    const member = await verify();
 
     if (result.success) {
       alert("로그인 성공");
-      window.location.href = "/home";
-      window.location.reload();
-      // setUser("test");
+      // window.location.href = "/home";
+      // window.location.reload();
+      navigate("/home");
+      setUser(member.user.email);
     } else {
       alert(`로그인 실패: ${result.error}`);
     }

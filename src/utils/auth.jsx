@@ -1,6 +1,4 @@
 import axios from "axios";
-import { useSetRecoilState } from "recoil";
-import { userState } from "../recoil/atom";
 
 const Logins = async (userEmail, password) => {
   try {
@@ -59,4 +57,35 @@ const verify = async () => {
   }
 };
 
-export { Logins, verify };
+const Joins = async (email, password, name) => {
+  try {
+    const response = await axios.post(
+      "http://localhost:8000/join",
+      {
+        joinEmail: email,
+        joinPwd: password,
+        joinName: name,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+
+    if (response.data.success) {
+      return { success: true };
+    } else {
+      return { success: false };
+    }
+  } catch (error) {
+    console.error("회원가입 실패:", error);
+    return { success: false, error: "회원가입 실패" };
+  }
+};
+
+const Logout = async () => {
+  try {
+    const response = await axios.post("http://localhost:8000/logout");
+  } catch {}
+};
+
+export { Logins, verify, Joins };

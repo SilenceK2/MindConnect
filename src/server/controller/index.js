@@ -1,6 +1,9 @@
 const db = require("../models/index");
 const jwt = require("jsonwebtoken");
 const Redis = require("redis");
+const bcrypt = require("bcrypt");
+const member = require("../models/member");
+const saltRounds = 10;
 const redisClient = Redis.createClient({
   host: "127.0.0.1",
   port: 6379,
@@ -11,10 +14,15 @@ const login = async (req, res) => {
   try {
     await redisClient.connect();
     const { userEmail, password } = req.body;
+    const user = await db.member.findOne({
+      password,
+    });
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
     const userInfo = await db.member.findOne({
       where: {
         email: userEmail,
-        password: password,
+        password: passwordMatch,
       },
     });
 
@@ -41,7 +49,7 @@ const login = async (req, res) => {
       },
       "my-secret-key",
       {
-        expiresIn: "24h",
+        expiresIn: "1h",
         issuer: "myserver",
       }
     );
@@ -74,15 +82,45 @@ const checking = (req, res) => {
     }
 
     const user = {
-      //user에 담긴거 recoil로 상태관리 보내기??
       email: decoded.email,
       name: decoded.name,
     };
     res.status(200).json({ success: true, user }); // auth로 success : true보냄 ( router 사용할때 써먹을 것 )
+    console.log(user);
   });
 };
 
-const join = async (req, res) => {};
+const join = async (req, res) => {
+  try {
+    const { joinEmail, joinPwd, joinName } = req.body;
+
+    // 비밀번호 해시 처리
+    const hashedPassword = await bcrypt.hash(joinPwd, saltRounds);
+    const newUser = await db.member.create({
+      email: joinEmail,
+      password: hashedPassword,
+      name: joinName,
+      type: "connector",
+    });
+
+    // 회원가입 성공 응답
+    res.status(200).json({ success: true, message: "회원 가입 성공" });
+  } catch (error) {
+    // 이메일이 이미 있을경우(유니크제약?)
+    if (error.name === "SequelizeUniqueConstraintError") {
+      return res
+        .status(400)
+        .json({ success: false, message: "이미 사용중인 이메일입니다." });
+    }
+
+    console.error("Join error:", error);
+    res.status(500).json({
+      success: false,
+      message: "회원 가입 실패",
+      error: error.message,
+    });
+  }
+};
 
 const logout = async (req, res) => {};
 

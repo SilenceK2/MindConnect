@@ -4,6 +4,7 @@ import Login from "../pages/LogIn";
 import Join from "../pages/Join";
 import ErrorPage from "../pages/ErrorPage";
 import { verify } from "../utils/auth";
+
 const router = createBrowserRouter([
   {
     path: "/*",
@@ -21,6 +22,11 @@ const router = createBrowserRouter([
   {
     path: "/join",
     element: <Join />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "login",
+    element: <Login />,
     errorElement: <ErrorPage />,
   },
 ]);

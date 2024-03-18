@@ -1,18 +1,22 @@
 import { useState } from "react";
 import axios from "axios";
+import { io } from "socket.io-client";
+import { useEffect } from "react";
 
 function ChatInput(props) {
   const [message, setMessage] = useState("");
   const dataUrl = window.location.href.slice(-1);
-  // const socket = io("http://localhost:8000", {
-  //   transports: ["websocket"],
-  // });
+  const socket = io("http://localhost:8000", {
+    cors: "*",
+    withCredentials: true,
+  });
 
-  // useEffect(() => {
-  //   socket.emit("join", dataUrl);
-
-  //   socket.emit("msg", message);
-  // }, [props.setChatData]);
+  useEffect(() => {
+    socket.emit("connection");
+    socket.on("room", (msg) => {
+      console.log(msg);
+    });
+  }, [props.setChatData]);
 
   const fetchData = async () => {
     try {

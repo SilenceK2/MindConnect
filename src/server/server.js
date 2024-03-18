@@ -4,11 +4,29 @@ const { sequelize } = require("./models/index");
 const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT || 8000;
-// const http = require("http");
-// const { Server } = require("socket.io");
-// const server = http.createServer(app);
 const { login, checking, logout, join } = require("./controller");
-// const secretKey = "my-secret-key";
+const { Server } = require("socket.io");
+const http = require("http");
+
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
+
+const room = io.of("/room");
+
+room.on("connect", (socket) => {
+  console.log("room접속", socket.id);
+});
+
+io.on("connection", (socket) => {
+  console.log("user connection");
+});
 
 app.use(express.json());
 app.use(
@@ -35,7 +53,9 @@ sequelize
     app.get("/chat/:id", async (req, res) => {
       const ids = req.params.id;
       const chat = await db.chat.findAll({
-        connectId: ids,
+        where: {
+          connectId: ids,
+        },
       });
       return res.json(chat);
     });
@@ -64,9 +84,10 @@ sequelize
 
     app.post("/login", login);
     app.post("/checking", checking);
-    app.get("/logout", logout);
+    app.post("/logout", logout);
     app.post("/join", join);
 
-    app.listen(PORT, () => console.log(`서버 시작`));
+    server.listen(PORT, () => console.log(`서버 시작`));
   })
+
   .catch((err) => console.error("데이터베이스 연결 중 오류 발생", err));

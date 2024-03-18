@@ -1,27 +1,27 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('chat', {
+  return sequelize.define('login', {
     id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    connectId: {
+    username: {
       type: DataTypes.INTEGER,
       allowNull: true
     },
-    type: {
+    password: {
       type: DataTypes.CHAR(10),
       allowNull: true
     },
-    contents: {
+    email: {
       type: DataTypes.TEXT,
       allowNull: true
     }
   }, {
     sequelize,
-    tableName: 'chat',
+    tableName: 'login',
     timestamps: false,
     indexes: [
       {

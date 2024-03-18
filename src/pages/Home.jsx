@@ -5,13 +5,17 @@ import { useNavigate } from "react-router-dom";
 import ChatInput from "../Components/ChatInput";
 import ChatBubble from "../Components/ChatBubble";
 import "../main.css";
+import { userState } from "../recoil/atom";
+import { useRecoilValue } from "recoil";
+import { io } from "socket.io-client";
 
-function Home(props) {
+function Home() {
   const [data, setData] = useState([]);
   const [selectedId, setSelectedId] = useState(-1);
   const [chatData, setChatData] = useState([]);
   const navigate = useNavigate();
   const dataUrl = window.location.href.slice(-1);
+  const user = useRecoilValue(userState);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -105,7 +109,7 @@ function Home(props) {
                   type="submit"
                   onClick={LogoutEvent}
                 >
-                  <p>userName : </p>
+                  <p> userName: {user}</p>
                 </button>
               </div>
             </div>
