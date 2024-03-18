@@ -251,6 +251,11 @@
   justify-content: center;
 }
 
+.Login-btn > p {
+  font-weight: bold;
+  font-size: 20px;
+}
+
 .Login-btn:hover {
   background-color: #7c7c7c;
   color: #fff;

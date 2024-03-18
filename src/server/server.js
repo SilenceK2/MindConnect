@@ -4,29 +4,13 @@ const { sequelize } = require("./models/index");
 const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT || 8000;
-const { login, checking, logout, join } = require("./controller");
-const { Server } = require("socket.io");
 const http = require("http");
+const socketController = require("./controller/socketController");
+const { login, logout, join, checking } = require("./controller/index");
 
 const server = http.createServer(app);
 
-const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
-});
-
-const room = io.of("/room");
-
-room.on("connect", (socket) => {
-  console.log("room접속", socket.id);
-});
-
-io.on("connection", (socket) => {
-  console.log("user connection");
-});
+// socketController(server);
 
 app.use(express.json());
 app.use(

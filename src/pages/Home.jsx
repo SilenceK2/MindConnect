@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { FaPerson } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import ChatInput from "../Components/ChatInput";
 import ChatBubble from "../Components/ChatBubble";
 import "../main.css";
 import { userState } from "../recoil/atom";
 import { useRecoilValue } from "recoil";
-import { io } from "socket.io-client";
+import ConnecterList from "../Components/ConnecterList";
 
 function Home() {
   const [data, setData] = useState([]);
   const [selectedId, setSelectedId] = useState(-1);
   const [chatData, setChatData] = useState([]);
   const navigate = useNavigate();
-  const dataUrl = window.location.href.slice(-1);
   const user = useRecoilValue(userState);
 
   useEffect(() => {
@@ -29,19 +27,9 @@ function Home() {
     fetchData();
   }, []);
 
-  const fetchDeleteLoginData = async () => {
+  const fetchChatData = async (id) => {
     try {
-      await axios.get("http://localhost:8000/logout");
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const fetchChatData = async (selectedId) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:8000/chat/${selectedId}`
-      );
+      const response = await axios.get(`http://localhost:8000/chat/${id}`);
       setChatData(response.data);
     } catch (error) {
       console.error(error);
@@ -56,108 +44,62 @@ function Home() {
 
   const deleteChat = async () => {
     try {
-      await axios.post(`http://localhost:8000/delete/${dataUrl}`);
-      console.log("채팅 삭제");
+      await axios.delete(`http://localhost:8000/chat/${selectedId}`);
       setChatData([]);
     } catch (error) {
-      console.error("error", error.message);
+      console.error(error);
     }
   };
 
   const LogoutEvent = () => {
     localStorage.removeItem("accessToken");
-    fetchDeleteLoginData();
+    navigate("/login");
   };
 
   return (
-    <>
-      <div className="containers">
-        <div className="container">
-          <div className="list">
-            <div className="list-logo"></div>
-            <div className="list-item">
-              {data.map((currentData) => (
-                <div
-                  className="list-box"
-                  key={currentData.id}
-                  onClick={() => {
-                    setSelectedId(currentData.id);
-                  }}
-                >
-                  <div className="list-box-icon">
-                    <FaPerson icon="true" size={30} />
-                  </div>
-
-                  <div
-                    className="list-box-item"
-                    key={currentData.id}
-                    onClick={() => {
-                      navigate(`/${currentData.id}`);
-                    }}
-                  >
-                    <p>Name: {currentData.name}</p>
-                    <p>Content: {currentData.content}</p>
-                    <p>Location: {currentData.location}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="list-login">
-              <div className="login">
-                <button
-                  className="Login-btn"
-                  type="submit"
-                  onClick={LogoutEvent}
-                >
-                  <p> userName: {user}</p>
-                </button>
-              </div>
-            </div>
+    <div className="containers">
+      <div className="container">
+        <div className="list">
+          <ConnecterList
+            data={data}
+            setSelectedId={setSelectedId}
+            navigate={navigate}
+          />
+          <div className="list-login">
+            <button className="Login-btn" onClick={LogoutEvent}>
+              <p>{user}</p>
+            </button>
           </div>
-          <div className="chat-board">
-            <div className="chat-item-top">
-              <button type="submit" onClick={deleteChat}>
-                채팅 나가기
-              </button>
-            </div>
-            <div className="chat-main">
-              {selectedId !== -1 && (
-                <div className="chat-bg">
-                  {chatData
-                    .filter((message) => message.connectId === selectedId)
-                    .map((message, index) => (
-                      <div key={index}>
-                        <ChatBubble
-                          id={message.connectId}
-                          type={message.type === "user" ? "user" : "bot"}
-                          content={message.contents}
-                        />
-                      </div>
-                    ))}
-                </div>
-              )}
-
-              <div className="chat-msg">
-                <ChatInput
-                  setChatData={(message) =>
-                    setChatData(
-                      chatData.concat({
-                        id: "",
-                        connectId: selectedId,
-                        contents: message,
-                        type: "user",
-                      })
-                    )
-                  }
-                />
+        </div>
+        <div className="chat-board">
+          <div className="chat-item-top">
+            <button onClick={deleteChat}>채팅 나가기</button>
+          </div>
+          <div className="chat-main">
+            {selectedId !== -1 && (
+              <div className="chat-bg">
+                {chatData.map((message, index) => (
+                  <ChatBubble key={index} {...message} />
+                ))}
               </div>
+            )}
+            <div className="chat-msg">
+              <ChatInput
+                setChatData={(message) =>
+                  setChatData(
+                    chatData.concat({
+                      connectId: selectedId,
+                      contents: message,
+                      type: "user",
+                    })
+                  )
+                }
+              />
             </div>
           </div>
         </div>
       </div>
-
-      {/* {showLoginModal && <Login onClose={closeModal} onLogin={loginUser} />} */}
-    </>
+    </div>
   );
 }
 

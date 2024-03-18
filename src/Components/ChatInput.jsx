@@ -13,9 +13,6 @@ function ChatInput(props) {
 
   useEffect(() => {
     socket.emit("connection");
-    socket.on("room", (msg) => {
-      console.log(msg);
-    });
   }, [props.setChatData]);
 
   const fetchData = async () => {

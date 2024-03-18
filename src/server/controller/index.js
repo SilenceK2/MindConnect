@@ -37,7 +37,7 @@ const login = async (req, res) => {
     };
 
     const accessToken = jwt.sign(userData, "my-secret-key", {
-      expiresIn: "1m",
+      expiresIn: "10m",
       issuer: "myserver",
     });
 
